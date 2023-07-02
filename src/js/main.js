@@ -26,7 +26,6 @@ function onSearch(event) {
       if (response.data.hits.length !== 0) {
         Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
         loadButton.classList.remove('is-hidden');
-        console.log(response)
       };
       if (page === response.data.total / response.data.totalHits) {
         Notify.failure(
@@ -58,6 +57,7 @@ async function fetchSearchQuery(q) {
         Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
+        loadButton.classList.add('is-hidden');
       }
       const hits = response.data.hits;
       createMarkup(hits);
