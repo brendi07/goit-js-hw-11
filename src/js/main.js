@@ -21,13 +21,16 @@ async function onSearch(event) {
   event.preventDefault();
   query = event.currentTarget.elements.searchQuery.value.trim();
   loadButton.style.display = 'none';
-  if (!query) {return}
+  if (!query) {
+    Notify.info('Please, fiil in the field.');
+    return
+  }
 
    gallery.innerHTML = '';
    page = 1;
   
   try {
-   const response = await fetchSearchQuery(query);
+   const response = await fetchSearchQuery(query, page);
     const hits = response.data.hits;
      createMarkup(hits);
    if (hits.length !== 0) {
@@ -36,8 +39,13 @@ async function onSearch(event) {
    } else {
       Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
-      );
-   }
+     );
+     return
+    }
+    if (hits.length < 40) {
+      loadButton.style.display = 'none';
+    }
+
   } catch {
       Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
@@ -54,10 +62,14 @@ async function onLoadMore() {
   createMarkup(hits);
     if (hits.length < 40) {
       loadButton.style.display = 'none';
-      Notify.info("We're sorry, but you've reached the end of search results.");
     } else {
       loadButton.style.display = 'block';
   }
+ if (page === Math.round(response.data.totalHits / hits.length)) {
+   loadButton.style.display = 'none';
+   Notify.info("We're sorry, but you've reached the end of search results.");
+ }
+
 }
 
 
